@@ -10,7 +10,7 @@ const Menu = ({ showArticleState }: MenuProps) => {
     <Wrapper showArticleState={showArticleState}>
       <a href="https://www.twitch.tv/" target="_blank" rel="noreferrer">
         <img src={Twitch} alt="Twitch" />
-        <span>STREAM</span>
+        <span>PODCAST</span>
       </a>
       <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">
         <img src={Youtube} alt="Youtube" />
