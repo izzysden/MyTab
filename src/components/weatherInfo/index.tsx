@@ -58,7 +58,7 @@ const WeatherInfo = () => {
           </div>
         </div>
       )}
-      {`${dayjs(weatherState.refreshDate).format("HH:mm")}` ===
+      {`${dayjs(weatherState.refreshDate).format("HH:mm")}` !==
       "Invalid Date" ? (
         <span>
           Updated on {dayjs(weatherState.refreshDate).format("HH:mm")}
