@@ -17,7 +17,8 @@ export const validateCachedWeatherDate = (): boolean => {
     const diffTime: number =
       Math.abs(now.valueOf() - cachedWeather.refreshDate.valueOf()) / 1000;
 
-    if (cachedWeather.refreshDate === undefined || diffTime > 3600) return true;
+    if (cachedWeather.refreshDate === undefined || diffTime > 28800)
+      return true;
     else return false;
   } else return true;
 };
@@ -30,7 +31,7 @@ export const validateCachedLocationDate = (): boolean => {
     const diffTime: number =
       Math.abs(now.valueOf() - cachedLocation.refreshDate.valueOf()) / 1000;
 
-    if (cachedLocation.refreshDate === undefined || diffTime > 3600)
+    if (cachedLocation.refreshDate === undefined || diffTime > 28800)
       return true;
     else return false;
   } else return true;
