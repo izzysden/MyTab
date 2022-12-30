@@ -9,13 +9,13 @@ import { WeatherType } from "../../assets/types/weather";
 const WeatherInfo = () => {
   const [locationState, setLocationState] = useState<LocationType>({
     refreshDate: "",
-    city: "",
+    city: "Awaiting Permission...",
     country: "",
   });
   const [weatherState, setWeatherState] = useState<WeatherType>({
     refreshDate: "",
-    temperature: 0,
-    feels_like: 0,
+    temperature: 273,
+    feels_like: 273,
     main: "",
     icon: "https://media.tenor.com/On7kvXhzml4AAAAi/loading-gif.gif",
   });
@@ -40,20 +40,37 @@ const WeatherInfo = () => {
   return (
     <Wrapper>
       <h2>
-        {locationState.city}, {locationState.country}
+        {locationState.city}
+        {locationState.country === "South Korea"
+          ? ", Korea"
+          : locationState.country !== "" && ", " + locationState.country}
       </h2>
-      <div>
-        <img src={weatherState.icon} alt={weatherState.main} />
-        <h3>{(weatherState.temperature - 273).toFixed(1)}°C</h3>
+      {weatherState.main !== "" && (
         <div>
-          <h3> {weatherState.main}</h3>
-          <span>
-            FEELS LIKE{" "}
-            <strong>{(weatherState.feels_like - 273).toFixed(1)}°C</strong>
-          </span>
+          <img src={weatherState.icon} alt={weatherState.main} />
+          <h3>{(weatherState.temperature - 273).toFixed(1)}°C</h3>
+          <div>
+            <h3> {weatherState.main}</h3>
+            <span>
+              FEELS LIKE{" "}
+              <strong>{(weatherState.feels_like - 273).toFixed(1)}°C</strong>
+            </span>
+          </div>
         </div>
-      </div>
-      <span>Updated on {dayjs(weatherState.refreshDate).format("HH:mm")}</span>
+      )}
+      {`${dayjs(weatherState.refreshDate).format("HH:mm")}` ===
+      "Invalid Date" ? (
+        <span>
+          Updated on {dayjs(weatherState.refreshDate).format("HH:mm")}
+        </span>
+      ) : (
+        <>
+          <span>Update Failed.</span>
+          <span>
+            Please refresh the website as soon as permission is granted.
+          </span>
+        </>
+      )}
     </Wrapper>
   );
 };

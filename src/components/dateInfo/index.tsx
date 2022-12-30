@@ -112,6 +112,7 @@ export default DateInfo;
 
 const Wrapper = styled.div`
   height: 228px;
+  max-height: 228px;
 
   > div {
     margin-bottom: 16px;

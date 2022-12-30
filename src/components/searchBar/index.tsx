@@ -16,12 +16,14 @@ const SearchBar = ({ inputFocusState, setInputFocusState }: SearchBarProps) => {
       isEmpty={isEmpty}
       action="https://www.google.com/search"
       method="GET"
+      target="_blank"
+      rel="noreferrer"
       onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
         const input: HTMLInputElement = e.currentTarget[1] as HTMLInputElement;
         if (input.value.length <= 0) e.preventDefault();
       }}
       onMouseEnter={() => {
-        setInputFocusState("mouseEnter");
+        if (inputFocusState !== "focus") setInputFocusState("mouseEnter");
       }}
       onMouseLeave={() => {
         if (inputFocusState === "mouseEnter") setInputFocusState("");

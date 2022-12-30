@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import ReactPlayer from "react-player";
 import styled from "styled-components";
+import { Delete, Playlist } from "../../assets/images";
 import { PlaylistType } from "../../assets/types/playlist";
 import { scrollNext, scrollPrev } from "../../utils/scroll";
-const usetube = require("usetube");
 
 const Collection = () => {
   const [hasScrollbar, setHasScrollbar] = useState<boolean>(false);
@@ -19,31 +20,34 @@ const Collection = () => {
 
   const addPlaylist = async () => {
     const text = prompt("Please type your youtube playlist link.", "");
-    if (text) {
-      const playlistInfo = await usetube.getPlaylistVideos(
-        text.replace("https://youtube.com/playlist?list=", "")
-      );
-      if (playlistInfo) {
-        const data: PlaylistType = {
+    if (text)
+      if (playlistState.findIndex((v) => v.url === text) === -1) {
+        const now = new Date();
+        const Data: PlaylistType = {
           url: text,
-          thumbnail: `http://img.youtube.com/vi/${playlistInfo[0].id}/hqdefault.jpg`,
-          title: `Mix - ${playlistInfo[0].title}`,
-          songs: playlistInfo.map((v: { title: string }) => v.title),
-          duration: playlistInfo
-            .map((v: { duration: number }) => v.duration)
-            .reduce((a: number, b: number) => a + b),
+          createdDate: `${
+            now.getMonth() + 1
+          }/${now.getDate()}/${now.getFullYear()}`,
+          playedTimes: 0,
         };
         localStorage.setItem(
           "playlist",
-          JSON.stringify([data, ...playlistState])
+          JSON.stringify([Data, ...playlistState])
         );
-        setPlaylistState([data, ...playlistState]);
-      } else alert("Invalid Link Error.");
-    }
+        setPlaylistState([Data, ...playlistState]);
+      } else alert("The item already exists.");
   };
 
   useEffect(() => {
     window.addEventListener("resize", resizeItem);
+
+    const cachedPlaylist: PlaylistType[] = JSON.parse(
+      localStorage.getItem("playlist")!
+    ) as PlaylistType[];
+
+    if (cachedPlaylist && playlistState.length === 0)
+      setPlaylistState([...playlistState, ...cachedPlaylist]);
+
     return () => window.removeEventListener("resize", resizeItem);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -56,7 +60,9 @@ const Collection = () => {
   return (
     <Wrapper>
       <h2>
-        Your Playlist
+        <span>
+          <img src={Playlist} alt="playlist" /> Your Playlist
+        </span>
         <button type="button" onClick={() => addPlaylist()}>
           +
         </button>
@@ -82,8 +88,33 @@ const Collection = () => {
           {playlistState.length > 0 ? (
             playlistState.map((v) => {
               return (
-                <li>
-                  <span>a</span>
+                <li key={v.url}>
+                  <ReactPlayer
+                    url={v.url}
+                    loop={true}
+                    width={362}
+                    height={224}
+                    pip={true}
+                    stopOnUnmount={false}
+                    onStart={() => {}}
+                  />
+                  <img
+                    src={Delete}
+                    alt="Delete"
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to delete this item?"
+                        )
+                      ) {
+                        const temp: PlaylistType[] = playlistState.filter(
+                          (playlist) => playlist.url !== v.url
+                        );
+                        setPlaylistState(temp);
+                        localStorage.setItem("playlist", JSON.stringify(temp));
+                      }
+                    }}
+                  />
                 </li>
               );
             })
@@ -124,6 +155,17 @@ const Wrapper = styled.div`
 
     border-bottom: 1px solid ${({ theme }) => theme.colors.grey};
 
+    > span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      > img {
+        margin-right: 8px;
+        object-fit: contain;
+      }
+    }
+
     > button {
       background-color: transparent;
 
@@ -144,49 +186,85 @@ interface ListProps {
 const List = styled.ul<ListProps>`
   position: absolute;
 
-  padding-bottom: 10px;
+  transform: translateY(5px);
 
   width: calc(100% - 60px);
+  ${(props) =>
+    props.hasScrollbar === true
+      ? "transform: translateY(0px); height: 222px; padding-bottom: 8px;"
+      : "height: 234px;"}
+
+  white-space: nowrap;
 
   list-style-type: none;
   overflow-x: scroll;
   overflow-y: hidden;
-  white-space: nowrap;
 
   > strong {
     background-color: ${({ theme }) => theme.colors.background};
 
-    transform: translateY(9px);
-
     width: 100%;
-    height: 224px;
+    ${(props) =>
+      props.hasScrollbar === true ? "height: 204px;" : "height: 224px;"}
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    border-radius: 10px;
+    border-radius: 8px;
   }
 
   > li {
     background-color: ${({ theme }) => theme.colors.background};
 
-    margin-right: 10px;
+    margin-right: 8px;
 
     width: 362px;
     ${(props) =>
-      props.hasScrollbar === true
-        ? "height: 204px;"
-        : "height: 224px; transform: translateY(9px);"}
+      props.hasScrollbar === true ? "height: 204px;" : "height: 224px;"}
 
     display: inline-flex;
+    justify-content: center;
 
-    border-radius: 10px;
+    border-radius: 8px;
 
     ${({ theme }) => theme.common.hoverEffect}
 
     :last-of-type {
       margin-right: 0;
+    }
+
+    :hover {
+      > img {
+        display: flex;
+      }
+    }
+
+    > img {
+      background-color: ${({ theme }) => theme.colors.translucent};
+
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+
+      padding: 8px;
+
+      display: none;
+
+      border-radius: 8px;
+
+      ${({ theme }) => theme.common.hoverEffect}
+    }
+
+    div,
+    iframe {
+      width: 100%;
+      ${(props) =>
+        props.hasScrollbar === true
+          ? "height: 204px !important;"
+          : "height: 224px !important;"}
+
+      border-radius: 8px;
     }
   }
 `;
@@ -210,7 +288,7 @@ const Scroll = styled.div`
     font-size: ${({ theme }) => theme.colors.subText};
 
     user-select: none;
-    border-radius: 10px;
+    border-radius: 8px;
 
     ${({ theme }) => theme.common.hoverEffect}
   }

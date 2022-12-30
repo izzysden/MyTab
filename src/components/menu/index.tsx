@@ -8,18 +8,18 @@ interface MenuProps {
 const Menu = ({ showArticleState }: MenuProps) => {
   return (
     <Wrapper showArticleState={showArticleState}>
-      <button id="twitch" type="button">
+      <a href="https://www.twitch.tv/" target="_blank" rel="noreferrer">
         <img src={Twitch} alt="Twitch" />
-        <span>PODCAST</span>
-      </button>
-      <button id="youtube" type="button">
+        <span>STREAM</span>
+      </a>
+      <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">
         <img src={Youtube} alt="Youtube" />
-        <span>PLAYLIST</span>
-      </button>
-      <button id="github" type="button">
+        <span>VOD</span>
+      </a>
+      <a href="https://github.com/Sonnehilda" target="_blank" rel="noreferrer">
         <img src={Github} alt="Github" />
         <span>WORK</span>
-      </button>
+      </a>
     </Wrapper>
   );
 };
@@ -37,7 +37,7 @@ const Wrapper = styled.menu<MenuProps>`
 
   ${(props) => !props.showArticleState && "pointer-events: none;"}
 
-  > button {
+  > a {
     background-color: ${({ theme }) => theme.colors.subMain};
 
     width: 33.333%;
