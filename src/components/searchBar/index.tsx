@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Search } from "../../assets/images";
 
@@ -9,6 +9,11 @@ interface SearchBarProps {
 
 const SearchBar = ({ inputFocusState, setInputFocusState }: SearchBarProps) => {
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
     <Wrapper
@@ -16,8 +21,6 @@ const SearchBar = ({ inputFocusState, setInputFocusState }: SearchBarProps) => {
       isEmpty={isEmpty}
       action="https://www.google.com/search"
       method="GET"
-      target="_blank"
-      rel="noreferrer"
       onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
         const input: HTMLInputElement = e.currentTarget[1] as HTMLInputElement;
         if (input.value.length <= 0) e.preventDefault();
@@ -34,9 +37,9 @@ const SearchBar = ({ inputFocusState, setInputFocusState }: SearchBarProps) => {
           <img src={Search} alt="search" />
         </button>
         <input
+          ref={inputRef}
           type="search"
           id="q"
-          title="Search bar"
           name="q"
           autoComplete="off"
           maxLength={250}
